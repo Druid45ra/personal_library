@@ -1,0 +1,26 @@
+[
+    {
+        "id": 1,
+        "title": "Test Title",
+        "author": "Test Author",
+        "genre": "Test Genre",
+        "year": 2025,
+        "status": "Unread"
+    },
+    {
+        "id": 2,
+        "title": "Test Title",
+        "author": "Test Author",
+        "genre": "Test Genre",
+        "year": 2025,
+        "status": "Unread"
+    },
+    {
+        "id": 3,
+        "title": "afasf",
+        "author": "asdad",
+        "genre": "asdas",
+        "year": "asdas",
+        "status": "asd"
+    }
+]

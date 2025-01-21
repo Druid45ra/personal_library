@@ -1,21 +1,24 @@
 import json
 
-FILE_PATH = "library.json"
-
 def load_books():
     try:
-        with open(FILE_PATH, "r") as file:
-            return json.load(file)
+        with open("library.json", "r") as file:
+            content = file.read()
+            if not content.strip():  # Verifică dacă fișierul este gol
+                return []
+            return json.loads(content)
     except FileNotFoundError:
         return []
 
+
 def save_books(books):
-    with open(FILE_PATH, "w") as file:
+    with open("library.json", "w") as file:
         json.dump(books, file, indent=4)
+
 
 def add_book(title, author, genre, year, status):
     books = load_books()
-    new_book = {
+    book = {
         "id": len(books) + 1,
         "title": title,
         "author": author,
@@ -23,20 +26,24 @@ def add_book(title, author, genre, year, status):
         "year": year,
         "status": status
     }
-    books.append(new_book)
+    books.append(book)
     save_books(books)
-    print(f"Cartea '{title}' a fost adăugată.")
+
+
+def delete_book(book_id):
+    books = load_books()
+    updated_books = [book for book in books if book["id"] != book_id]
     
-    import unittest
-from utils import add_book, load_books, save_books
+    # Reasignează ID-urile pentru a menține ordinea
+    for idx, book in enumerate(updated_books):
+        book["id"] = idx + 1
 
-class TestLibrary(unittest.TestCase):
-    def test_add_book(self):
-        # Adaugă o carte fictivă
-        add_book("Test Title", "Test Author", "Test Genre", 2025, "Unread")
-        books = load_books()
-        self.assertEqual(books[-1]['title'], "Test Title")
+    save_books(updated_books)
+    print(f"Cartea cu ID {book_id} a fost ștearsă.")
 
-if __name__ == '__main__':
-    unittest.main()
 
+def search_books(keyword):
+    books = load_books()
+    results = [book for book in books if keyword.lower() in book['title'].lower() or keyword.lower() in book['author'].lower()]
+    return results
+# return [book for book in books if keyword.lower() in book['title'].lower()

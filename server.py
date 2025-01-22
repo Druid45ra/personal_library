@@ -25,7 +25,8 @@ def get_books():
 @app.route('/books', methods=['POST'])
 def add_book():
     new_book = request.get_json()
-    if not new_book or not all(key in new_book for key in ("title", "author", "genre", "year", "status")):
+    required_fields = ("title", "author", "genre", "year", "status")
+    if not new_book or not all(key in new_book for key in required_fields):
         return jsonify({"error": "Invalid data"}), 400
 
     books = load_books()
@@ -33,6 +34,25 @@ def add_book():
     books.append(new_book)
     save_books(books)
     return jsonify(new_book), 201
+
+@app.route('/books/<int:book_id>', methods=['PUT'])
+def update_book(book_id):
+    books = load_books()
+    book_to_update = next((book for book in books if book['id'] == book_id), None)
+    if book_to_update is None:
+        return jsonify({"error": "Book not found"}), 404
+
+    updated_book = request.get_json()
+    required_fields = ("title", "author", "genre", "year", "status")
+    if not updated_book or not all(key in updated_book for key in required_fields):
+        return jsonify({"error": "Invalid data"}), 400
+
+    for key, value in updated_book.items():
+        if key in required_fields:
+            book_to_update[key] = value
+
+    save_books(books)
+    return jsonify(book_to_update), 200
 
 @app.route('/search', methods=['GET'])
 def search_books():

@@ -1,18 +1,18 @@
 [
     {
         "id": 1,
-        "title": "Test Title",
-        "author": "Test Author",
-        "genre": "Test Genre",
-        "year": 2025,
-        "status": "Unread"
+        "title": "Unique Title",
+        "author": "John Doe",
+        "genre": "Fiction",
+        "year": 2020,
+        "status": "Read"
     },
     {
         "id": 2,
-        "title": "Test Title",
-        "author": "Test Author",
-        "genre": "Test Genre",
-        "year": 2025,
+        "title": "Another Title",
+        "author": "Jane Doe",
+        "genre": "Non-Fiction",
+        "year": 2022,
         "status": "Unread"
     }
 ]

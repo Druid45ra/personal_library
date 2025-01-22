@@ -1,4 +1,52 @@
 from utils import load_books, save_books, add_book, delete_book, search_books
+from flask import Flask, jsonify, request
+from utils import load_books, save_books, add_book, delete_book, search_books
+
+app = Flask(__name__)
+
+# Endpoint pentru afișarea tuturor cărților
+@app.route("/books", methods=["GET"])
+def get_books():
+    books = load_books()
+    return jsonify(books), 200
+
+# Endpoint pentru adăugarea unei cărți
+@app.route("/books", methods=["POST"])
+def create_book():
+    data = request.get_json()
+    if not data or "title" not in data or "author" not in data:
+        return jsonify({"error": "Titlu și autor sunt obligatorii!"}), 400
+    
+    add_book(
+        title=data["title"],
+        author=data["author"],
+        genre=data.get("genre", ""),
+        year=data.get("year", ""),
+        status=data.get("status", "necitită")
+    )
+    return jsonify({"message": "Cartea a fost adăugată!"}), 201
+
+# Endpoint pentru ștergerea unei cărți
+@app.route("/books/<int:book_id>", methods=["DELETE"])
+def remove_book(book_id):
+    books = load_books()
+    if not any(book["id"] == book_id for book in books):
+        return jsonify({"error": "Cartea nu există!"}), 404
+
+    delete_book(book_id)
+    return jsonify({"message": "Cartea a fost ștearsă!"}), 200
+
+# Endpoint pentru căutarea cărților
+@app.route("/search", methods=["GET"])
+def search_for_books():
+    keyword = request.args.get("query", "")
+    results = search_books(keyword)
+    return jsonify(results), 200
+
+if __name__ == "__main__":
+    print("=== Biblioteca Personală ===")
+    app.run(debug=True)
+
 
 def display_menu():
     print("\n1. Adaugă o carte")
@@ -12,6 +60,8 @@ def get_book_info():
     author = input("Autor: ")
     genre = input("Gen: ")
     year = input("An publicare: ")
+    while not year.isdigit():
+        year = input("An publicare (număr valid): ")
     status = input("Stare (citită/necitită): ")
     return title, author, genre, year, status
 
@@ -45,8 +95,11 @@ def main():
             display_books(books)
         
         elif choice == "3":
-            book_id = int(input("ID-ul cărții de șters: "))
-            delete_book(book_id)
+            try:
+                book_id = int(input("ID-ul cărții de șters: "))
+                delete_book(book_id)
+            except ValueError:
+                print("ID-ul trebuie să fie un număr.")
         
         elif choice == "4":
             keyword = input("Caută (titlu sau autor): ")
@@ -62,3 +115,31 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+from flask import Flask, request, jsonify
+from utils import load_books, save_books, add_book
+
+app = Flask(__name__)
+
+@app.route('/books', methods=['GET', 'POST'])
+def handle_books():
+    if request.method == 'GET':
+        books = load_books()
+        return jsonify(books)
+
+    if request.method == 'POST':
+        data = request.get_json()
+        if not data:
+            return jsonify({"error": "Invalid data"}), 400
+
+        title = data.get("title")
+        author = data.get("author")
+        genre = data.get("genre")
+        year = data.get("year")
+        status = data.get("status")
+
+        if not all([title, author, genre, year, status]):
+            return jsonify({"error": "All fields are required"}), 400
+
+        add_book(title, author, genre, year, status)
+        return jsonify({"message": "Book added successfully"}), 201

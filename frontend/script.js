@@ -3,6 +3,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
   const messageDiv = document.getElementById("message");
 
+  // Funcție pentru a afișa mesajele
+  const showMessage = (message, isSuccess = true) => {
+    messageDiv.textContent = message;
+    messageDiv.style.color = isSuccess ? "green" : "red";
+  };
+
   // Adăugarea unei cărți
   const addBookForm = document.getElementById("addBookForm");
   addBookForm.addEventListener("submit", function (event) {
@@ -22,9 +28,20 @@ document.addEventListener("DOMContentLoaded", function () {
       status: statusInput.value.trim(),
     };
 
+    // Validare câmpuri
     const validateBook = (book) => {
-      if (!book.title || !book.author || !book.genre || !book.year || !book.status) {
-        messageDiv.textContent = "Toate câmpurile sunt obligatorii!";
+      if (
+        !book.title ||
+        !book.author ||
+        !book.genre ||
+        !book.year ||
+        !book.status
+      ) {
+        showMessage("Toate câmpurile sunt obligatorii!", false);
+        return false;
+      }
+      if (isNaN(book.year) || parseInt(book.year) < 0) {
+        showMessage("Anul trebuie să fie un număr pozitiv!", false);
         return false;
       }
       return true;
@@ -34,30 +51,49 @@ document.addEventListener("DOMContentLoaded", function () {
       return;
     }
 
-    fetch("/books", {
+    fetch("http://127.0.0.1:5000/books", {
+      // Asigură-te că serverul este activ pe acest port
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(book),
     })
       .then((response) => {
         if (!response.ok) {
-          throw new Error("Failed to add book");
+          throw new Error("Eroare la adăugarea cărții!");
         }
         return response.json();
       })
       .then((data) => {
         loadBooks(); // Reîncarcă lista de cărți
         addBookForm.reset();
-        messageDiv.textContent = "Cartea a fost adăugată cu succes!";
+        showMessage("Cartea a fost adăugată cu succes!");
       })
       .catch((error) => {
-        messageDiv.textContent = error.message;
+        showMessage(error.message, false);
       });
   });
-});     messageDiv.textContent = "Cartea a fost adăugată cu succes!";
+
+  // Funcție pentru încărcarea cărților
+  function loadBooks() {
+    fetch("http://127.0.0.1:5000/books") // Asigură-te că serverul este activ pe acest port
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Eroare la încărcarea cărților!");
+        }
+        return response.json();
+      })
+      .then((books) => {
+        const booksList = document.getElementById("booksList");
+        booksList.innerHTML = ""; // Curăță lista existentă
+
+        books.forEach((book) => {
+          const li = document.createElement("li");
+          li.textContent = `${book.title} - ${book.author} (${book.year})`;
+          booksList.appendChild(li);
+        });
       })
       .catch((error) => {
-        messageDiv.textContent = error.message;
+        showMessage(error.message, false);
       });
-  });
+  }
 });

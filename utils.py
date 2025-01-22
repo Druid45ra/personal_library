@@ -65,3 +65,16 @@ def display_books():
     books = load_books()
     for book in books:
         print(f"ID: {book['id']}, Titlu: {book['title']}, Autor: {book['author']}, Gen: {book['genre']}, An: {book['year']}, Status: {book['status']}")
+        
+if __name__ == "__main__":
+    print("[TEST] Adăugare carte")
+    add_book("Test Book", "Test Author", "Test Genre", "2025", "Unread")
+    display_books()
+
+    print("\n[TEST] Ștergere carte")
+    delete_book(1)
+    display_books()
+
+    print("\n[TEST] Căutare carte")
+    results = search_books("Test")
+    print(results)

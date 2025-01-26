@@ -14,5 +14,21 @@
         "genre": "Non-Fiction",
         "year": 2022,
         "status": "Unread"
+    },
+    {
+        "id": 3,
+        "title": "Bratara pe glezna ta",
+        "author": "Radu Paraschivescu",
+        "genre": "Fictiune",
+        "year": "2024",
+        "status": "citita"
+    },
+    {
+        "id": 4,
+        "title": "Soarele negru",
+        "author": "Alexandru-Bogdan Stanescu",
+        "genre": "Fictiune",
+        "year": "2024",
+        "status": "citita"
     }
 ]

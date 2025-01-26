@@ -36,7 +36,7 @@ Setting Up the Project
 
 1. Clone the repository:
 
-git clone https://github.com/your-username/personal-library.git
+git clone https://github.com/Druid45ra/personal_library.git
 
 
 2. Navigate into the project directory:

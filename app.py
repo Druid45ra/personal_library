@@ -1,5 +1,6 @@
 from utils import load_books, save_books, add_book, delete_book, search_books
 from flask import Flask, jsonify, request
+import json
 
 app = Flask(__name__)
 
@@ -49,7 +50,8 @@ def run_terminal_app():
         print("2. Afișează toate cărțile")
         print("3. Șterge o carte")
         print("4. Caută cărți")
-        print("5. Ieșire")
+        print("5. Filtrează cărți după status")
+        print("6. Ieșire")
 
     def get_book_info():
         title = input("Titlu: ")
@@ -74,6 +76,19 @@ def run_terminal_app():
         else:
             for book in results:
                 print(f"Titlu: {book['title']}, Autor: {book['author']}")
+
+    def filter_books_by_status(status):
+        with open('library.json', 'r') as file:
+            books = json.load(file)
+        filtered_books = [book for book in books if book['status'].lower() == status.lower()]
+        return filtered_books
+
+    def display_filtered_books(filtered_books):
+        if filtered_books:
+            for book in filtered_books:
+                print(f"ID: {book['id']}, Titlu: {book['title']}, Autor: {book['author']}, Gen: {book['genre']}, An: {book['year']}, Stare: {book['status']}")
+        else:
+            print("Nu au fost găsite cărți cu statusul dat.")
 
     print("=== Biblioteca Personală ===")
     while True:
@@ -102,6 +117,11 @@ def run_terminal_app():
             display_search_results(results)
 
         elif choice == "5":
+            status = input("Introduceți statusul (citită/necitită): ")
+            filtered_books = filter_books_by_status(status)
+            display_filtered_books(filtered_books)
+
+        elif choice == "6":
             print("La revedere!")
             break
 

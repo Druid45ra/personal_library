@@ -43,9 +43,15 @@ def search_for_books():
     results = search_books(keyword)
     return jsonify(results), 200
 
+if __name__ == "__main__":
+    app.run(debug=True)
+
 # Funcția pentru rularea aplicației în terminal
-def run_terminal_app():
-    def display_menu():
+def run_terminal_app() -> None:
+    """Run the application in terminal mode"""
+
+    def display_menu() -> None:
+        """Display the main menu"""
         print("\n1. Adaugă o carte")
         print("2. Afișează toate cărțile")
         print("3. Șterge o carte")
@@ -53,42 +59,62 @@ def run_terminal_app():
         print("5. Filtrează cărți după status")
         print("6. Ieșire")
 
-    def get_book_info():
+    def get_book_info() -> tuple[str, str, str, str, str]:
+        """Get book info from user"""
         title = input("Titlu: ")
         author = input("Autor: ")
         genre = input("Gen: ")
         year = input("An publicare: ")
         while not year.isdigit():
             year = input("An publicare (număr valid): ")
-        status = input("Stare (citită/necitită): ")
+        status = input("Stare (citită/necitită): ").lower()
+        if status not in ("citită", "necitită"):
+            status = "necitită"
         return title, author, genre, year, status
 
-    def display_books(books):
+    def display_books(books: list[dict[str, str | int]]) -> None:
+        """Display books"""
         if not books:
-            print("Biblioteca este goală.")
+            print("Biblioteca este goal .")
         else:
             for book in books:
-                print(f"ID: {book['id']}, Titlu: {book['title']}, Autor: {book['author']}, Gen: {book['genre']}, An: {book['year']}, Stare: {book['status']}")
+                print(
+                    f"ID: {book['id']}, Titlu: {book['title']}, "
+                    f"Autor: {book['author']}, Gen: {book['genre']}, "
+                    f"An: {book['year']}, Stare: {book['status']}"
+                )
 
-    def display_search_results(results):
+    def display_search_results(results: list[dict[str, str | int]]) -> None:
+        """Display search results"""
         if not results:
             print("Nu au fost găsite cărți.")
         else:
             for book in results:
-                print(f"Titlu: {book['title']}, Autor: {book['author']}")
+                print(
+                    f"ID: {book['id']}, Titlu: {book['title']}, "
+                    f"Autor: {book['author']}, Gen: {book['genre']}, "
+                    f"An: {book['year']}, Stare: {book['status']}"
+                )
 
-    def filter_books_by_status(status):
-        with open('library.json', 'r') as file:
+    def filter_books_by_status(status: str) -> list[dict[str, str | int]]:
+        """Filter books by status"""
+        with open('library.json', 'r', encoding='utf-8') as file:
             books = json.load(file)
-        filtered_books = [book for book in books if book['status'].lower() == status.lower()]
+        filtered_books = [book for book in books if book['status'].casefold() == status.casefold()]
         return filtered_books
 
-    def display_filtered_books(filtered_books):
-        if filtered_books:
-            for book in filtered_books:
-                print(f"ID: {book['id']}, Titlu: {book['title']}, Autor: {book['author']}, Gen: {book['genre']}, An: {book['year']}, Stare: {book['status']}")
-        else:
+    def display_filtered_books(filtered_books: list[dict[str, str | int]]) -> None:
+        """Display filtered books."""
+        if not filtered_books:
             print("Nu au fost găsite cărți cu statusul dat.")
+            return
+            
+        for book in filtered_books:
+            print(
+                f"ID: {book['id']}, Titlu: {book['title']}, "
+                f"Autor: {book['author']}, Gen: {book['genre']}, "
+                f"An: {book['year']}, Stare: {book['status']}"
+            )
 
     print("=== Biblioteca Personală ===")
     while True:
